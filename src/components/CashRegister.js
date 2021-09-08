@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./CashRegister.css";
 import { AiOutlineGithub, AiOutlineTwitter } from "react-icons/ai";
 import { FaDiscord, FaLinkedin } from "react-icons/fa";
 
@@ -11,10 +12,10 @@ const initialValues = {
 export default function CashRegister() {
   //state variable track changes in the values
   const [values, setValues] = useState(initialValues);
-  const [check, setCheck] = useState("");
+  const [check, setCheck] = useState("show");
   const [output, setOutput] = useState([]);
   const [message, setMessage] = useState("");
-
+  // as
   //store input values in state variable
   function handleInputChange(event) {
     const { name, value } = event.target;
@@ -27,9 +28,9 @@ export default function CashRegister() {
   const handleCheck = () => {
     if (values.billAmount === "") {
       setMessage("Enter the amount to proceed");
-      setCheck(false);
+      setCheck("showMsg");
     } else {
-      setCheck(true);
+      setCheck("hide");
     }
   };
   //demonination array
@@ -42,13 +43,19 @@ export default function CashRegister() {
 
   //function to calculate no of notes to be returned of each denomination
   function calculateChange() {
-    if (parseInt(values.billAmount) <= 0 || parseInt(values.cash) <= 0) {
+    if (parseInt(values.billAmount) <= 0) {
+      console.log(values.billAmount);
       setMessage("Bill Amount should be greater than zero");
+      setOutput([]);
+      return;
     } else if (parseInt(values.billAmount) > parseInt(values.cash)) {
-      setMessage("cash should be greater then bill amount");
-    } else if (values.billAmount === "") {
-      setMessage("Enter the field values");
-      console.log(message);
+      setMessage("Cash should be greater then bill amount");
+      setOutput([]);
+      return;
+    } else if (values.billAmount === "" || values.cash === "") {
+      setMessage("Enter all the field values");
+      setOutput([]);
+      return;
     } else {
       for (let i = 0; i < notes.length; i++) {
         if (returnedAmount >= notes[i]) {
@@ -57,6 +64,7 @@ export default function CashRegister() {
         }
       }
       setOutput(numberOfNotes);
+      setMessage("");
     }
   }
   return (
@@ -71,19 +79,20 @@ export default function CashRegister() {
           name="billAmount"
         />
       </div>
-      {check === false ? (
+      {check === "show" && (
+        <button onClick={handleCheck} className="btn btn-check">
+          Check
+        </button>
+      )}
+      {check === "showMsg" && (
         <>
           <button onClick={handleCheck} className="btn btn-check">
             Check
           </button>
           <p className="error-msg">{message}</p>
         </>
-      ) : (
-        <button onClick={handleCheck} className="btn btn-check">
-          Check
-        </button>
       )}
-      {check === true ? (
+      {check === "hide" ? (
         <>
           <div className="input-group">
             <label htmlFor="billAmount">Cash Given:</label>
@@ -98,6 +107,7 @@ export default function CashRegister() {
             </button>
           </div>
           <div className="output-container">
+            <p className="output-message">{message}</p>
             <table>
               <caption>Return Change</caption>
               <tbody>
