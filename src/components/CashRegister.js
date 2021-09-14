@@ -15,6 +15,7 @@ export default function CashRegister() {
   const [check, setCheck] = useState("show");
   const [output, setOutput] = useState([]);
   const [message, setMessage] = useState("");
+  const [returnChange, setReturnChange] = useState(0);
   // as
   //store input values in state variable
   function handleInputChange(event) {
@@ -39,24 +40,27 @@ export default function CashRegister() {
   //output array - no of notes needed
   let numberOfNotes = [0, 0, 0, 0, 0, 0, 0];
 
-  var returnedAmount = values.cash - values.billAmount;
-
   //function to calculate no of notes to be returned of each denomination
   function calculateChange() {
     if (parseInt(values.billAmount) <= 0) {
       console.log(values.billAmount);
       setMessage("Bill Amount should be greater than zero");
       setOutput([]);
+      setReturnChange(0);
       return;
     } else if (parseInt(values.billAmount) > parseInt(values.cash)) {
       setMessage("Cash should be greater then bill amount");
       setOutput([]);
+      setReturnChange(0);
       return;
     } else if (values.billAmount === "" || values.cash === "") {
       setMessage("Enter all the field values");
       setOutput([]);
+      setReturnChange(0);
       return;
     } else {
+      var returnedAmount = values.cash - values.billAmount;
+      setReturnChange(returnedAmount);
       for (let i = 0; i < notes.length; i++) {
         if (returnedAmount >= notes[i]) {
           numberOfNotes[i] = Math.trunc(returnedAmount / notes[i]);
@@ -109,7 +113,7 @@ export default function CashRegister() {
           <div className="output-container">
             <p className="output-message">{message}</p>
             <table>
-              <caption>Return Change</caption>
+              <caption>Return Change {returnChange}</caption>
               <tbody>
                 <tr>
                   <th>Note</th>
